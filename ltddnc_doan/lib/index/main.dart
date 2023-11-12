@@ -20,6 +20,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
+        colorSchemeSeed: Colors.blueGrey,
+
       ),
       // routes: {
       //   "/" : (context) => LoginPage(),
