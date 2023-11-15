@@ -20,14 +20,36 @@ class _ItemWidgetState extends State<ItemWidget>{
     await docProduct.delete().then((result){
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Xoá sản phẩm thành công")));
-      // setState(() {
-      //
-      // });
     }).catchError((onError){
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Xoá sản phẩm thất bại. Error!')));
     });
   }
+  Future<void> displayDialogDeleteProduct(BuildContext context, int position){
+    return showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: const Text('Confirm to delete'),
+            content: const Text('Are you sure to delete this item ?'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel')
+              ),
+              TextButton(
+                  onPressed: (){
+                    deleteProduct(widget.products[position], context);
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK')
+              )
+            ],
+          );
+        }
+    );
+  }
+
 
   @override
   Widget build(BuildContext context){
@@ -109,7 +131,7 @@ class _ItemWidgetState extends State<ItemWidget>{
                     const SizedBox(width: 5,),
                     IconButton.filledTonal(
                       onPressed: () {
-                        // deleteProduct(widget.products[i], context);
+                        displayDialogDeleteProduct(context, i);
                       },
                       iconSize: 30,
                       color: Colors.blueGrey,

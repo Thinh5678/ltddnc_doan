@@ -13,8 +13,10 @@ class LoginPage extends StatefulWidget{
   State<LoginPage> createState() => _loginPageState();
 }
 
-class _loginPageState extends State<LoginPage>{
+class _loginPageState extends State<LoginPage> with SingleTickerProviderStateMixin{
   final _formField = GlobalKey<FormState>();
+  late Animation<double> _animation;
+  late AnimationController _animationController;
   String? errorMessage = '';
 
   final TextEditingController _controllerEmail = TextEditingController();
@@ -42,6 +44,31 @@ class _loginPageState extends State<LoginPage>{
   }
 
   @override
+  void initState() {
+    super.initState();
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    _animation.addListener(() {
+      setState(() {});
+    });
+    _animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _animationController.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        _animationController.forward();
+      }
+    });
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context){
     return Scaffold(
       body: SingleChildScrollView(
@@ -50,9 +77,10 @@ class _loginPageState extends State<LoginPage>{
             key: _formField,
             child: Column(
               children: [
-                Padding(padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Image.asset("images_flutter/login.png"),
-                ),
+                // Padding(padding: const EdgeInsets.symmetric(vertical: 15),
+                //   child: Image.asset("images_flutter/login.png"),
+                // ),
+                AnimatedLogo(animation: _animation),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -230,6 +258,22 @@ class _loginPageState extends State<LoginPage>{
           )
         ),
       ),
+    );
+  }
+}
+
+class AnimatedLogo extends AnimatedWidget {
+  final Tween<double> _sizeAnimation = Tween<double>(begin: 0.0, end: 1.0);
+
+  AnimatedLogo({Key? key, required Animation<double> animation})
+      : super(key: key, listenable: animation);
+
+  @override
+  Widget build(BuildContext context) {
+    final animation = listenable as Animation<double>;
+    return Opacity(
+      opacity: animation.value,
+      child: Image.asset("images_flutter/login.png"),
     );
   }
 }
